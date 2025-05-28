@@ -1,3 +1,2 @@
 selenium
-# slack_sdk
 discord.py
