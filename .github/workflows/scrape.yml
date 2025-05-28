@@ -1,53 +1,30 @@
 name: Scrape and Notify
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'  # 毎時0分に実行
+  workflow_dispatch:    # 手動実行も可能
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver
+          pip install selenium slack_sdk
 
-      - name: Load user config
-        id: config
-        run: |
-          USER=${{ github.actor }}
-          CONFIG="configs/${USER}.json"
-          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
-          echo "SLACK_USER_ID=$(jq -r .slack_user_id $CONFIG)" >> $GITHUB_ENV
-          echo "SECRET_NAME=$(jq -r .slack_token_secret $CONFIG)" >> $GITHUB_ENV
-          echo "NAME=$(jq -r .name $CONFIG)" >> $GITHUB_ENV
-
-      - name: Set Slack token from secret
-        run: |
-          echo "SLACK_BOT_TOKEN=${{ secrets[env.SECRET_NAME] }}" >> $GITHUB_ENV
-
-      - name: Run Scraper
-        id: scraper
-        run: |
-          python scraper/scrape.py > result.txt
-          RESULT=$(cat result.txt)
-          echo "result=$RESULT" >> $GITHUB_OUTPUT
-
-      - name: Notify if scrape failed
-        if: steps.scraper.outputs.result == 'false'
-        run: |
-          curl -X POST https://slack.com/api/chat.postMessage \
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -H "Content-type: application/json" \
-            --data '{
-              "channel": "'"$SLACK_USER_ID"'",
-              "text": "まだだよ！ by '"$NAME"'"
-            }'
+      - name: Run scraper
+        run: python scraper/scrape.py
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: '#your-channel'
