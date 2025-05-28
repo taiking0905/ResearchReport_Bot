@@ -2,7 +2,7 @@ name: Scrape and Notify
 
 on:
   schedule:
-    - cron: '0 * * * *'  # 毎時0分に実行
+  - cron: '0 12 * * 1-5'  # 平日のみ21時（JST）に実行（12:00 UTC）
   workflow_dispatch:    # 手動実行も可能
 
 jobs:
