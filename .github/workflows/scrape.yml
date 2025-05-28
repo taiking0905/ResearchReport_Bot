@@ -27,4 +27,4 @@ jobs:
         run: python scraper/scraper.py
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL: '#your-channel'
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL_ID }}
