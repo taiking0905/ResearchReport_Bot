@@ -41,6 +41,6 @@ def scrape_and_get_text():
 if __name__ == "__main__":
     text = scrape_and_get_text()
     if not text:
-        asyncio.run(send_discord_message("まだだよ"))
+        asyncio.run(send_discord_message("@here まだだよ"))
     else:
         asyncio.run(send_discord_message(f"書いてあるね！\n{text}"))
