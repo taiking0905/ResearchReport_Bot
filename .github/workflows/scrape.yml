@@ -17,14 +17,14 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Chromium and chromedriver
         run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-chromedriver
-          pip install selenium slack_sdk
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser chromium-chromedriver
+            pip install selenium slack_sdk
 
       - name: Run scraper
-        run: python scraper/scraper.py
+        run: python scraper/scrape.py
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL: '#your-channel'
