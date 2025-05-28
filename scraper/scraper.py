@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
 from slack_sdk import WebClient
-
+from selenium.webdriver.common.by import By
 
 
 def scrape_and_notify():
@@ -15,7 +15,8 @@ def scrape_and_notify():
     driver = webdriver.Chrome(options=options)
     driver.get('https://fukaya-lab.azurewebsites.net/report.html?id=T122115')
 
-    elem = driver.find_element_by_css_selector('div[data-bind*="current().first"]')
+
+    elem = driver.find_element(By.CSS_SELECTOR, 'div[data-bind*="current().first"]')
     text = elem.text if elem else ''
 
     driver.quit()
