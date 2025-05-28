@@ -31,6 +31,8 @@ def scrape_and_notify():
     if not text:
         client = WebClient(token=os.environ['SLACK_BOT_TOKEN'])
         client.chat_postMessage(channel=os.environ['SLACK_CHANNEL'], text="まだだよ")
-
+    else:
+        client = WebClient(token=os.environ['SLACK_BOT_TOKEN'])
+        client.chat_postMessage(channel=os.environ['SLACK_CHANNEL'], text="書いてあるね！\n" + text)
 if __name__ == "__main__":
     scrape_and_notify()
