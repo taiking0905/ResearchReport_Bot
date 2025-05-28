@@ -1,0 +1,6 @@
+
+{
+  "name": "taro",
+  "slack_user_id": "U123ABC456",
+  "slack_token_secret": "SLACK_BOT_TOKEN_TARO"
+}

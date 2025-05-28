@@ -1,0 +1,53 @@
+name: Scrape and Notify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Load user config
+        id: config
+        run: |
+          USER=${{ github.actor }}
+          CONFIG="configs/${USER}.json"
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+          echo "SLACK_USER_ID=$(jq -r .slack_user_id $CONFIG)" >> $GITHUB_ENV
+          echo "SECRET_NAME=$(jq -r .slack_token_secret $CONFIG)" >> $GITHUB_ENV
+          echo "NAME=$(jq -r .name $CONFIG)" >> $GITHUB_ENV
+
+      - name: Set Slack token from secret
+        run: |
+          echo "SLACK_BOT_TOKEN=${{ secrets[env.SECRET_NAME] }}" >> $GITHUB_ENV
+
+      - name: Run Scraper
+        id: scraper
+        run: |
+          python scraper/scrape.py > result.txt
+          RESULT=$(cat result.txt)
+          echo "result=$RESULT" >> $GITHUB_OUTPUT
+
+      - name: Notify if scrape failed
+        if: steps.scraper.outputs.result == 'false'
+        run: |
+          curl -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-type: application/json" \
+            --data '{
+              "channel": "'"$SLACK_USER_ID"'",
+              "text": "まだだよ！ by '"$NAME"'"
+            }'
