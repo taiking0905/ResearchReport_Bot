@@ -3,6 +3,8 @@ from selenium.webdriver.chrome.options import Options
 import os
 from slack_sdk import WebClient
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def scrape_and_notify():
@@ -13,11 +15,16 @@ def scrape_and_notify():
     options.add_argument('--disable-dev-shm-usage')
 
     driver = webdriver.Chrome(options=options)
+    
     driver.get('https://fukaya-lab.azurewebsites.net/report.html?id=T122115')
 
+    # 最大10秒待機して要素が見つかるのを待つ
+    wait = WebDriverWait(driver, 10)
+    elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-bind*="current().first"]')))
 
-    elem = driver.find_element(By.CSS_SELECTOR, 'div[data-bind*="current().first"]')
-    text = elem.text if elem else ''
+    # innerTextが入るのをさらに待つ
+    wait.until(lambda d: elem.text.strip() != '')
+    text = elem.text.strip()
 
     driver.quit()
 
