@@ -38,19 +38,23 @@ def scrape_and_get_text():
 
         wait = WebDriverWait(driver, 10)
         elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-bind*="current().first"]')))
-        wait.until(lambda d: elem.text.strip() != '')
-
+        
+        # innerTextを直接使って空チェック
         text = elem.text.strip()
+        return text
+    
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")
+        return None
     finally:
         driver.quit()
 
-    return text
 
 # --- 実行部分 ---
 if __name__ == "__main__":
     text = scrape_and_get_text()
 
-    if not text:
+    if text is None or text == "":
         asyncio.run(send_discord_message("@here まだだよ"))
     else:
         asyncio.run(send_discord_message(f"書いてあるね！\n{text}"))
