@@ -40,6 +40,7 @@ def scrape_and_get_text():
         elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-bind*="current().first"]')))
         
         # innerTextを直接使って空チェック
+        wait.until(lambda d: elem.text.strip() != '')
         text = elem.text.strip()
         return text
     
