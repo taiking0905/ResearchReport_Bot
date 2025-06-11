@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+URL = os.environ['SCRAPE_URL']
 DISCORD_TOKEN = os.environ['DISCORD_BOT_TOKEN']
 CHANNEL_ID = int(os.environ['DISCORD_CHANNEL_ID'])
 
@@ -34,7 +35,7 @@ def scrape_and_get_text():
     driver = webdriver.Chrome(options=options)
 
     try:
-        driver.get('https://fukaya-lab.azurewebsites.net/report.html?id=T122115')
+        driver.get(URL)
 
         wait = WebDriverWait(driver, 10)
         elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-bind*="current().first"]')))
